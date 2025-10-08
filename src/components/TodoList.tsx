@@ -31,6 +31,12 @@ function TodoList() {
         console.log('todos', todos);
         setTodos(todos);
 
+        const handleLocalStorageChange = (e: StorageEvent) => {
+            console.log('Storage event detected:', e); 
+            if (e.key === STORAGE_KEYS.TODOS && e.newValue) {
+                setTodos(JSON.parse(e.newValue));
+            }
+        };
 
         const handleStorageChange = (e: any) => {
             console.log('Storage event detected:', e);
@@ -40,6 +46,8 @@ function TodoList() {
         };
 
         window.addEventListener('setItemEvent' as any, handleStorageChange);
+        window.addEventListener('storage', handleLocalStorageChange);
+
   
         return () => {
             window.removeEventListener('setItemEvent' as any, handleStorageChange);
