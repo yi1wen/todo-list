@@ -1,0 +1,47 @@
+.todoItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.todoItemContent {
+    display: flex;
+    align-items: center;
+    
+}
+
+.todoItemContentDone {
+    color: #888;
+}
+
+.todoItemRadio {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1.5px solid #000;
+    margin-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.todoItemRadioDone {
+    border: 1.5px solid #888;
+}
+.todoItemContent:hover {
+    cursor: pointer;
+}
+
+.todoItemContentTextDone {
+    text-decoration: line-through;
+}
+
+.listItemActions {
+    width: 80px;
+    visibility: hidden;
+    display: flex;
+    justify-content: space-between;
+}
+
+.todoItem:hover .listItemActions {
+    visibility: visible;
+}

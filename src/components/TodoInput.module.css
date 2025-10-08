@@ -1,0 +1,15 @@
+.todoInput {
+    border-radius: 10px;
+}
+
+.textarea {
+    background-color: transparent !important;
+    border: none;
+    outline: none;
+    resize: none;
+    
+}
+
+.divider {
+    margin-bottom: 16px;
+}
