@@ -41,9 +41,9 @@ export interface ConflictInfo {
 }
 
 export const STORAGE_KEYS = {
-  TODOS: 'collaborative-todos',
-  CONFLICTS: 'todo-conflicts',
-  TIME_WINDOW: 'todo-time-window'
+    TODOS: 'collaborative-todos',
+    CONFLICTS: 'todo-conflicts',
+    TIME_WINDOW: 'todo-time-window'
 };
 
 export const TIME_WINDOW_DURATION = 500; 

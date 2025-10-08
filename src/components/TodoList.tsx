@@ -28,6 +28,7 @@ function TodoList() {
         setTodos(todos);
 
         const callBack = (key: string, value: unknown) => {
+            console.log('listenStorage', key, value);
             if (key === STORAGE_KEYS.TODOS) {
                 setTodos(value as TodoItemType[]);
             }

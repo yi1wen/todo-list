@@ -21,10 +21,13 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "eslint \"**/*.{ts,tsx}\" --fix react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint \"**/*.{ts,tsx}\"",
+    "lint:fix": "eslint \"**/*.{ts,tsx}\" --fix",
+    "lint:all": "eslint . --ext .ts,.tsx"
   },
   "eslintConfig": {
     "extends": [
@@ -45,6 +48,8 @@
     ]
   },
   "devDependencies": {
-    "@types/howler": "^2.2.12"
+    "@types/howler": "^2.2.12",
+    "eslint": "^8.57.1",
+    "eslint-plugin-react": "^7.37.5"
   }
 }
