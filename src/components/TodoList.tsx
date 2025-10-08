@@ -2,22 +2,53 @@
 import styles from './TodoList.module.css';
 import TodoItem, { TodoItemType } from './TodoItem';
 import TodoInput from './TodoInput';
-import { Button, Message } from '@arco-design/web-react';
-import { useState } from 'react';
+import { Button } from '@arco-design/web-react';
+import { useEffect, useState } from 'react';
 import { IconPlusCircle } from '@arco-design/web-react/icon';
-import { mock } from '../mock';
+import TodoData from '../api/data-layer/index';
+import { OperationType } from '../api/data-layer/types';
+import { STORAGE_KEYS } from '../api/data-layer/types';
+const { getTodos, addTodo, listenStorage } = TodoData;
 
 function TodoList() {
     const [addTodoInputVisible, setAddTodoInputVisible] = useState(false);
 
-    const [todos, setTodos] = useState<TodoItemType[]>(mock);
-    const deleteTodo = (id: number) => {
+    useEffect(() => {
+        
+        addTodo({
+            action: OperationType.ADD,
+            timestamp: Date.now(),
+            data: {
+                id: String(Math.random()),
+                content: '123',
+            }
+        });
+        const todos = getTodos();
+        console.log('todos', todos);
+        setTodos(todos);
+
+        const callBack = (key: string, value: unknown) => {
+            if (key === STORAGE_KEYS.TODOS) {
+                setTodos(value as TodoItemType[]);
+            }
+        }
+
+        listenStorage(callBack);
+    }, []);
+
+    const [todos, setTodos] = useState<TodoItemType[]>([]);
+
+    const deleteTodo = (id: string) => {
         setTodos(todos.filter((todo) => todo.id !== id));
     }
     const editTodo = (todo: TodoItemType) => {
         setTodos(todos.map((t) => t.id === todo.id ? todo : t));
     }
-    const onToggle = (id: number) => {
+
+    const saveTodo = (todo: TodoItemType) => {
+        setTodos(todos.map((t) => t.id === todo.id ? todo : t));
+    }
+    const onToggle = (id: string) => {
         setTodos(todos.map((todo) => todo.id === id ? {...todo, isDone: !todo.isDone} : todo));
     }
 
@@ -33,7 +64,7 @@ function TodoList() {
             }}>
                 添加任务
             </Button>}
-            {addTodoInputVisible && <TodoInput todo={{id: Math.random(), content: '', isDone: false}} cancelInput={() => {
+            {addTodoInputVisible && <TodoInput todo={{id: String(Math.random()), content: '', isDone: false}} cancelInput={() => {
                 setAddTodoInputVisible(false);
             }} saveTodo={(todo: TodoItemType) => {
                 setTodos([...todos, todo])

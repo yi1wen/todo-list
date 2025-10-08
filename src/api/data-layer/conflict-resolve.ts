@@ -67,6 +67,7 @@ export const applyOperations = (todos: TodoItem[], operations: OperationLog[]): 
           updatedTodos.push({
             id: newId,
             content: operation.data.content,
+            isDone: false,
             status: TodoStatus.PENDING,
           });
         }

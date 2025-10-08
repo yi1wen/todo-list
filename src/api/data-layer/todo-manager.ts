@@ -13,7 +13,7 @@ import {
 } from './storage';
 import { mergeOperations, applyOperations } from './conflict-resolve';
 
-let windowTimeout: number | null = null;
+let windowTimeout: NodeJS.Timeout | null = null;
 
 const createOperation = (
   action: OperationType,
@@ -67,7 +67,7 @@ const manageTimeWindow = (): TimeWindow => {
     
     saveTimeWindow(newWindow);
 
-    windowTimeout = setTimeout(closeTimeWindow, TIME_WINDOW_DURATION);
+    windowTimeout = setTimeout(closeTimeWindow, TIME_WINDOW_DURATION) ;
     
     return newWindow;
   }
@@ -90,10 +90,11 @@ const addOperationToWindow = (operation: OperationLog): void => {
 
 // 新增待办
 export const addTodo = (operation: OperationLog): void => {
+    
 
-  const newOperation = createOperation(OperationType.ADD, operation.data);
-
-  addOperationToWindow(newOperation);
+    const newOperation = createOperation(OperationType.ADD, operation.data);
+    console.log('addTodo', newOperation);
+    addOperationToWindow(newOperation);
 };
 // 删除待办
 export const deleteTodo = (todoId: string): void => {

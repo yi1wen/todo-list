@@ -7,12 +7,11 @@ import 'animate.css';
 import { IconEdit, IconDelete, IconCheck } from '@arco-design/web-react/icon';
 
 export interface TodoItemType {
-  id: number;
+  id: string;
   content: string;
   isDone: boolean;
-  
 }
-function TodoItem({ todo, onDelete, onEdit, onToggle }: { todo: TodoItemType; onDelete: (id: number) => void; onEdit: (todo: TodoItemType) => void; onToggle: (id: number) => void }) {
+function TodoItem({ todo, onDelete, onEdit, onToggle }: { todo: TodoItemType; onDelete: (id: string) => void; onEdit: (todo: TodoItemType) => void; onToggle: (id: string) => void }) {
     const { id, content, isDone } = todo;
     const [isEditing, setIsEditing] = useState(false);
     return (

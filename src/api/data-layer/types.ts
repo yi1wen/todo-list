@@ -25,7 +25,8 @@ export interface OperationLog {
 export interface TodoItem {
   id: string;
   content: string;
-  status: TodoStatus;
+  isDone: boolean;
+  status?: TodoStatus;
 }
 
 export interface TimeWindow {
