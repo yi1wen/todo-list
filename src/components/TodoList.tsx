@@ -32,21 +32,17 @@ function TodoList() {
                 setTodos(value as TodoItemType[]);
             }
         }
-        const handleStorageChange = (e: StorageEvent) => {
-            if (Object.values(STORAGE_KEYS).includes(e.key as string) && e.newValue) {
-                try {
-                    const value = JSON.parse(e.newValue);
-                    callBack(e.key as string, value);
-                } catch (error) {
-                    console.error('解析存储数据失败', error);
-                }
+        const handleStorageChange = (e: any) => {
+            console.log('Storage event detected:', e);
+            if (e[STORAGE_KEYS.TODOS]) {
+                setTodos(JSON.parse(e[STORAGE_KEYS.TODOS]));
             }
         };
 
-        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('setItemEvent' as any, handleStorageChange);
   
         return () => {
-            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('setItemEvent' as any, handleStorageChange);
         };
     }, []);
 
