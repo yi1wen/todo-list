@@ -7,13 +7,18 @@ import { useEffect, useState } from 'react';
 import { IconPlusCircle } from '@arco-design/web-react/icon';
 import TodoData from '../api/data-layer/index';
 import { OperationType, STORAGE_KEYS } from '../api/data-layer/types';
+import { useRef } from 'react';
 const { getTodos,addTodo,editTodoContent } = TodoData;
 
 function TodoList() {
     const [addTodoInputVisible, setAddTodoInputVisible] = useState(false);
+    const isFirstRenderRef = useRef(false);
 
     useEffect(() => {
-        
+        if (isFirstRenderRef.current) {
+            return;
+        }
+        isFirstRenderRef.current = true;
         addTodo({
             action: OperationType.ADD,
             timestamp: Date.now(),
