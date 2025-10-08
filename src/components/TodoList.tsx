@@ -8,7 +8,7 @@ import { IconPlusCircle } from '@arco-design/web-react/icon';
 import TodoData from '../api/data-layer/index';
 import { OperationType, STORAGE_KEYS } from '../api/data-layer/types';
 import { useRef } from 'react';
-const { getTodos,addTodo,editTodoContent } = TodoData;
+const { getTodos,addTodo,editTodoContent,deleteTodo } = TodoData;
 
 function TodoList() {
     const [addTodoInputVisible, setAddTodoInputVisible] = useState(false);
@@ -48,7 +48,7 @@ function TodoList() {
 
     const [todos, setTodos] = useState<TodoItemType[]>([]);
 
-    const deleteTodo = (id: string) => {
+    const deleteTodos = (id: string) => {
         setTodos(todos.filter((todo) => todo.id !== id));
         deleteTodo(id);
     }
@@ -65,7 +65,7 @@ function TodoList() {
         <div className={styles.todoList}>
             {
                 todos.map((todo, index) => (
-                    <TodoItem key={todo.id} todo={todo} onDelete={deleteTodo} onEdit={editTodo} onToggle={onToggle}/>
+                    <TodoItem key={todo.id} todo={todo} onDelete={deleteTodos} onEdit={editTodo} onToggle={onToggle}/>
                 ))
             }
             {!addTodoInputVisible && <Button type='primary' status='danger' shape='round' icon={<IconPlusCircle />} onClick={() => {
