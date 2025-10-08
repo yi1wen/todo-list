@@ -26,9 +26,7 @@ const createOperation = (
   };
 };
 
-/**
- * 关闭时间窗口并处理所有操作
- */
+// 关闭时间窗口，合并并应用操作
 const closeTimeWindow = (): void => {
   const window = getTimeWindow();
   
@@ -56,10 +54,7 @@ const closeTimeWindow = (): void => {
   }
 };
 
-/**
- * 管理时间窗口状态
- * @returns 更新后的时间窗口
- */
+// 管理时间窗口，打开或返回现有窗口
 const manageTimeWindow = (): TimeWindow => {
   const window = getTimeWindow();
   
@@ -81,10 +76,7 @@ const manageTimeWindow = (): TimeWindow => {
   return window;
 };
 
-/**
- * 添加操作到时间窗口
- * @param operation 操作对象
- */
+// 向时间窗口添加操作
 const addOperationToWindow = (operation: OperationLog): void => {
   const window = manageTimeWindow();
   
@@ -103,11 +95,7 @@ export const addTodo = (operation: OperationLog): void => {
 
   addOperationToWindow(newOperation);
 };
-
-/**
- * 删除待办项
- * @param todoId 待办项ID
- */
+// 删除待办
 export const deleteTodo = (todoId: string): void => {
   const operation = createOperation(OperationType.DELETE, {
     id: todoId
@@ -130,7 +118,7 @@ export const toggleTodoStatus = (todoId: string, newStatus: TodoStatus): void =>
   
   addOperationToWindow(operation);
 };
-
+// 编辑待办内容
 export const editTodoContent = (todoId: string, newContent: string): void => {
   if (!newContent.trim()) return;
   
