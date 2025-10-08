@@ -6,9 +6,8 @@ import { Button } from '@arco-design/web-react';
 import { useEffect, useState } from 'react';
 import { IconPlusCircle } from '@arco-design/web-react/icon';
 import TodoData from '../api/data-layer/index';
-import { OperationType } from '../api/data-layer/types';
-import { STORAGE_KEYS } from '../api/data-layer/types';
-const { getTodos, addTodo, listenStorage } = TodoData;
+import { OperationType, STORAGE_KEYS } from '../api/data-layer/types';
+const { getTodos,addTodo,editTodoContent } = TodoData;
 
 function TodoList() {
     const [addTodoInputVisible, setAddTodoInputVisible] = useState(false);
@@ -28,21 +27,38 @@ function TodoList() {
         setTodos(todos);
 
         const callBack = (key: string, value: unknown) => {
+            console.log('Storage changed:', key, value);
             if (key === STORAGE_KEYS.TODOS) {
                 setTodos(value as TodoItemType[]);
             }
         }
+        const handleStorageChange = (e: StorageEvent) => {
+            if (Object.values(STORAGE_KEYS).includes(e.key as string) && e.newValue) {
+            try {
+                    const value = JSON.parse(e.newValue);
+                    callBack(e.key as string, value);
+                } catch (error) {
+                    console.error('解析存储数据失败', error);
+                }
+            }
+        };
 
-        listenStorage(callBack);
+        window.addEventListener('storage', handleStorageChange);
+  
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, []);
 
     const [todos, setTodos] = useState<TodoItemType[]>([]);
 
     const deleteTodo = (id: string) => {
         setTodos(todos.filter((todo) => todo.id !== id));
+        deleteTodo(id);
     }
     const editTodo = (todo: TodoItemType) => {
         setTodos(todos.map((t) => t.id === todo.id ? todo : t));
+        editTodoContent(todo.id, todo.content);
     }
 
     const saveTodo = (todo: TodoItemType) => {
@@ -50,6 +66,7 @@ function TodoList() {
     }
     const onToggle = (id: string) => {
         setTodos(todos.map((todo) => todo.id === id ? {...todo, isDone: !todo.isDone} : todo));
+        TodoData.toggleTodoStatus(id, todos.find((todo) => todo.id === id)?.isDone ? TodoData.TodoStatus.PENDING : TodoData.TodoStatus.COMPLETED);
     }
 
     return (
