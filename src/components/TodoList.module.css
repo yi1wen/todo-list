@@ -1,0 +1,8 @@
+.todoList {
+    margin: 0 auto;
+}
+
+.list-item-actions {
+    visibility: hidden;
+    display: flex;
+}
