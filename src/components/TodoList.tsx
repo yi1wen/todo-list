@@ -15,28 +15,23 @@ function TodoList() {
     const isFirstRenderRef = useRef(false);
 
     useEffect(() => {
-        if (isFirstRenderRef.current) {
+        if (!isFirstRenderRef.current) {
+            isFirstRenderRef.current = true;
             return;
         }
-        isFirstRenderRef.current = true;
         addTodo({
             action: OperationType.ADD,
             timestamp: Date.now(),
             data: {
                 id: String(Math.random()),
-                content: '123',
+                content: Math.random().toString(),
             }
         });
         const todos = getTodos();
         console.log('todos', todos);
         setTodos(todos);
 
-        const callBack = (key: string, value: unknown) => {
-            console.log('Storage changed:', key, value);
-            if (key === STORAGE_KEYS.TODOS) {
-                setTodos(value as TodoItemType[]);
-            }
-        }
+
         const handleStorageChange = (e: any) => {
             console.log('Storage event detected:', e);
             if (e[STORAGE_KEYS.TODOS]) {
@@ -60,10 +55,6 @@ function TodoList() {
     const editTodo = (todo: TodoItemType) => {
         setTodos(todos.map((t) => t.id === todo.id ? todo : t));
         editTodoContent(todo.id, todo.content);
-    }
-
-    const saveTodo = (todo: TodoItemType) => {
-        setTodos(todos.map((t) => t.id === todo.id ? todo : t));
     }
     const onToggle = (id: string) => {
         setTodos(todos.map((todo) => todo.id === id ? {...todo, isDone: !todo.isDone} : todo));
