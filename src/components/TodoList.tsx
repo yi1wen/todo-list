@@ -34,7 +34,7 @@ function TodoList() {
         }
         const handleStorageChange = (e: StorageEvent) => {
             if (Object.values(STORAGE_KEYS).includes(e.key as string) && e.newValue) {
-            try {
+                try {
                     const value = JSON.parse(e.newValue);
                     callBack(e.key as string, value);
                 } catch (error) {
