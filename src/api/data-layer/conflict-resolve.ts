@@ -32,7 +32,7 @@ export const mergeOperations = (operations: OperationLog[]): OperationLog[] => {
         }
     
         // 按时间戳排序，最新的在后面
-        const sorted = [...group].sort((a, b) => a.timestamp - b.timestamp);
+        const sorted = [...group].sort((a, b) => b.timestamp - a.timestamp);
         // 取时间戳最老的一个作为有效操作
         const resolvedOperation = sorted[0];
         // 剩下的都是冲突操作
@@ -93,7 +93,7 @@ export const applyOperations = (todos: TodoItem[], operations: OperationLog[]): 
             if (id && operation.data.status) {
                 updatedTodos = updatedTodos.map(todo => 
                     todo.id === id 
-                        ? { ...todo, status: operation.data.status, lastModified: operation.timestamp }
+                        ? { ...todo, isDone: operation.data.status === TodoStatus.COMPLETED, status: operation.data.status, lastModified: operation.timestamp }
                         : todo
                 ) as TodoItem[];
             }

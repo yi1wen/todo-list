@@ -1,8 +1,8 @@
 export enum TodoStatus {
   RUNNING = 'running', // 运行中
-  COMPLETED = 'completed`', // 已完成
+  COMPLETED = 'completed', // 已完成
   FAILED = 'failed', // 失败
-  PENDING = 'pending', // 待处`理
+  PENDING = 'pending', // 待处理
 }
 
 export enum OperationType {
@@ -46,4 +46,6 @@ export const STORAGE_KEYS = {
     TIME_WINDOW: 'todo-time-window'
 };
 
-export const TIME_WINDOW_DURATION = 500; 
+export const TIME_WINDOW_DURATION = 5000; 
+
+

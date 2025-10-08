@@ -5,7 +5,8 @@ localStorage.setItem = function (key, newValue) {
     const setItemEvent = new Event('setItemEvent');
     (setItemEvent as any)[key] = newValue;
     window.dispatchEvent(setItemEvent);
-    originalSetItem.apply(this, [key, newValue]);};
+    originalSetItem.apply(this, [key, newValue]);
+};
 
 // 初始化
 export const initStorage = (): void => {
@@ -101,7 +102,6 @@ export const listenStorage = (callback: (key: string, value: unknown) => void) =
             }
         }
     };
-    console.log('listenStorage', 'addEventListener');
 
     window.addEventListener('storage', handleStorageChange);
   
