@@ -1,0 +1,6 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "rules": {
+        "indent": ["error", 4]  // 2个空格缩进
+    }
+}
