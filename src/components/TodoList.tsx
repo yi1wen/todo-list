@@ -2,9 +2,9 @@
 import styles from './TodoList.module.css';
 import TodoItem, { TodoItemType } from './TodoItem';
 import TodoInput from './TodoInput';
-import { Button } from '@arco-design/web-react';
+import { Button, Divider } from '@arco-design/web-react';
 import { useEffect, useState } from 'react';
-import { IconPlusCircle } from '@arco-design/web-react/icon';
+import { IconPlusCircle, IconLoading } from '@arco-design/web-react/icon';
 import TodoData from '../api/data-layer/index';
 import { OperationType, STORAGE_KEYS } from '../api/data-layer/types';
 import { useRef } from 'react';
@@ -13,29 +13,52 @@ import useSound from 'use-sound';
 import toast, { Toaster } from 'react-hot-toast';
 
 const { getTodos, addTodo, editTodoContent, deleteTodo, toggleTodoStatus, listenStorage } = TodoData;
-
+enum INIT_STATE {
+    LOADING = 'loading',
+    HAS_MORE = 'hasMore',
+    NO_HAS_MORE = 'noMore',
+    FAILED = 'failed',
+}
 function TodoList() {
     const [addTodoInputVisible, setAddTodoInputVisible] = useState(false);
     const isFirstRenderRef = useRef(false);
     const [play] = useSound(deleteSound, { volume: 0.1, playbackRate: 1.5, interrupt: true });
-
+    const loadingPromise = useRef<{ resolve: (msg: string) => void; reject: (msg: string) => void }>({
+        resolve: (msg) => {},
+        reject: (msg) => {},
+    });
+    const message = useRef<string>('');
+    const [ initState, setInitState ] = useState<INIT_STATE>(INIT_STATE.LOADING);
+    const [todos, setTodos] = useState<TodoItemType[]>([]);
+    const handleSetTodos = (todos: TodoItemType[]) => {
+        if (todos.length === 0) {
+            setInitState(INIT_STATE.NO_HAS_MORE);
+        } else {
+            setInitState(INIT_STATE.HAS_MORE);
+        }
+        setTodos(todos);
+    }
 
     useEffect(() => {
+        
         if (!isFirstRenderRef.current) {
             isFirstRenderRef.current = true;
             return;
         }
+
         const todos = getTodos();
-        setTodos(todos);
+        setTimeout(() => {
+            handleSetTodos(todos);
+        }, 1000);
 
         const handleLocalStorageChange = (e: StorageEvent) => {
             if (e.key === STORAGE_KEYS.TODOS && e.newValue) {
-                setTodos(JSON.parse(e.newValue));
+                loadingPromise.current.resolve('保存成功');
+                handleSetTodos(JSON.parse(e.newValue));
             }
             if (e.key === STORAGE_KEYS.CONFLICTS) {
                 const conflicts = JSON.parse(e.newValue || '[]');
                 const {resolvedOperation} = conflicts[conflicts.length - 1];
-
                 toast('修改有冲突，已采用最新数据自动解决', {
                     icon: '⚠️',
                 });
@@ -43,9 +66,9 @@ function TodoList() {
         };
 
         const handleStorageChange = (e: any) => {
-            // console.log('Storage event detected:', e);
             if (e[STORAGE_KEYS.TODOS]) {
-                setTodos(JSON.parse(e[STORAGE_KEYS.TODOS]));
+                loadingPromise.current.resolve('保存成功');
+                handleSetTodos(JSON.parse(e[STORAGE_KEYS.TODOS]));
             }
 
             if (e[STORAGE_KEYS.CONFLICTS]) {
@@ -67,30 +90,53 @@ function TodoList() {
         };
     }, []);
 
-    const [todos, setTodos] = useState<TodoItemType[]>([]);
+   
+
+    const loading = () => {
+        toast.promise(
+            new Promise((resolve, reject) => {
+                message.current = '';
+                loadingPromise.current.resolve = (msg) => {
+                    message.current = msg;
+                    resolve(msg);
+                };
+                loadingPromise.current.reject = (msg) => {
+                    message.current = msg;
+                    reject(msg);
+                };
+            }),
+            {
+                loading: '保存中...',
+                success: <b>保存成功!</b>,
+                error: <b>{message.current || '保存失败，请稍后重试'}</b>,
+            },
+        );
+    }
 
     const onDeleteTodo = (id: string) => {
-        setTodos(todos.filter((todo) => todo.id !== id));
+        loading();
+        handleSetTodos(todos.filter((todo) => todo.id !== id));
         deleteTodo(id);
         play();
     }
     const onEditTodo = (todo: TodoItemType) => {
-        setTodos(todos.map((t) => t.id === todo.id ? todo : t));
+        loading();
+        handleSetTodos(todos.map((t) => t.id === todo.id ? todo : t));
         editTodoContent(todo.id, todo.content);
     }
     const onAddTodo = (todo: TodoItemType) => {
-
+        loading();
         addTodo({
             action: OperationType.ADD,
             timestamp: Date.now(),
             data: todo,
         });
-        toast.success('添加成功!')
         setAddTodoInputVisible(false);
     }
     const onToggleTodo = (id: string) => {
+        loading();
         const newIsDone = !todos.find((todo) => todo.id === id)?.isDone;
-        setTodos(todos.map((todo) => todo.id === id ? {...todo, isDone: newIsDone} : todo));
+        handleSetTodos(todos.map((todo) => todo.id === id ? {...todo, isDone: newIsDone} : todo));
         toggleTodoStatus(id, newIsDone ? TodoData.TodoStatus.COMPLETED : TodoData.TodoStatus.PENDING);
     }
 
@@ -101,6 +147,17 @@ function TodoList() {
                     <TodoItem key={todo.id} todo={todo} onDelete={onDeleteTodo} onEdit={onEditTodo} onToggle={onToggleTodo}/>
                 ))
             }
+            {initState !== INIT_STATE.HAS_MORE && <div className={styles.footer}>
+                {initState === INIT_STATE.LOADING && <div>
+                    <div><IconLoading /> 加载中...</div>
+                    <Divider />
+                </div>}
+                {initState === INIT_STATE.NO_HAS_MORE && todos.length === 0 && <div>
+                    <div>快来添加todos吧～</div>
+                    <Divider />
+                </div>}
+            </div>}
+            
             {!addTodoInputVisible && <Button type='primary' status='danger' shape='round' icon={<IconPlusCircle />} onClick={() => {
                 setAddTodoInputVisible(true);
             }}>

@@ -16,31 +16,34 @@ function TodoItem({ todo, onDelete, onEdit, onToggle }: { todo: TodoItemType; on
     const [isEditing, setIsEditing] = useState(false);
     return (
         <div>
-            {!isEditing && <div className={styles.todoItem + ' animate__animated animate__slideInLeft'}>
-                <div className={styles.todoItemContent + ' ' + (isDone ? styles.todoItemContentDone : '')}>
-                    <div className={styles.todoItemRadio + ' ' + (isDone ? styles.todoItemRadioDone : '')} onClick={() => {
-                        onToggle(id);
-                    }}>
-                        {isDone ? <IconCheck /> : ''}
+            <div className='animate__animated animate__slideInLeft'>
+                {!isEditing && <div className={styles.todoItem}>
+                    <div className={styles.todoItemContent + ' ' + (isDone ? styles.todoItemContentDone : '')}>
+                        <div className={styles.todoItemRadio + ' ' + (isDone ? styles.todoItemRadioDone : '')} onClick={() => {
+                            onToggle(id);
+                        }}>
+                            {isDone ? <IconCheck /> : ''}
+                        </div>
+                        <div className={isDone ? styles.todoItemContentTextDone : styles.todoItemContentText}>{content}</div>
                     </div>
-                    <div className={isDone ? styles.todoItemContentTextDone : styles.todoItemContentText}>{content}</div>
-                </div>
                 
-                <div className={styles.listItemActions}>
-                    <Button type='secondary' shape='circle' icon={<IconEdit />} onClick={() => {
-                        setIsEditing(true);
-                    }} />
-                    <Button type='secondary' shape='circle' icon={<IconDelete />} onClick={() => {
-                        onDelete(id);
-                    }} />
-                </div>
-            </div>}
-            {isEditing && <TodoInput todo={todo} isEditing={true} cancelInput={() => {
-                setIsEditing(false);
-            }} saveTodo={(todo: TodoItemType) => {
-                onEdit(todo);
-                setIsEditing(false);
-            }} />}
+                    <div className={styles.listItemActions}>
+                        <Button type='secondary' shape='circle' icon={<IconEdit />} onClick={() => {
+                            setIsEditing(true);
+                        }} />
+                        <Button type='secondary' shape='circle' icon={<IconDelete />} onClick={() => {
+                            onDelete(id);
+                        }} />
+                    </div>
+                </div>}
+                {isEditing && <TodoInput todo={todo} isEditing={true} cancelInput={() => {
+                    setIsEditing(false);
+                }} saveTodo={(todo: TodoItemType) => {
+                    onEdit(todo);
+                    setIsEditing(false);
+                }} />}
+            </div>
+            
             <Divider />
         </div>
     );

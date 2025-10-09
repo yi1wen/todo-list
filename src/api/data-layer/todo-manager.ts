@@ -90,10 +90,7 @@ const addOperationToWindow = (operation: OperationLog): void => {
 
 // 新增待办
 export const addTodo = (operation: OperationLog): void => {
-    
-
     const newOperation = createOperation(OperationType.ADD, operation.data);
-    console.log('addTodo', newOperation);
     addOperationToWindow(newOperation);
 };
 // 删除待办
