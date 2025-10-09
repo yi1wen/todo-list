@@ -16,7 +16,7 @@ function App() {
                     <div>实时协作待办事项列表</div>
                 </Header>
                 <Layout>
-                    <Sider className={styles.sider}>Sider</Sider>
+                    {/* <Sider className={styles.sider}>Sider</Sider> */}
                     <Content>
                         <div className={styles.content}>
                             <TodoList />
