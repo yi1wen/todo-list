@@ -3,11 +3,10 @@ import styles from './TodoList.module.css';
 import TodoItem, { TodoItemType } from './TodoItem';
 import TodoInput from './TodoInput';
 import { Button, Divider } from '@arco-design/web-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { IconPlusCircle, IconLoading } from '@arco-design/web-react/icon';
 import TodoData from '../api/data-layer/index';
 import { OperationType, STORAGE_KEYS } from '../api/data-layer/types';
-import { useRef } from 'react';
 const deleteSound = require('../assets/deleteVoice.mp3') as string;
 import useSound from 'use-sound';
 import toast, { Toaster } from 'react-hot-toast';
@@ -23,10 +22,7 @@ function TodoList() {
     const [addTodoInputVisible, setAddTodoInputVisible] = useState(false);
     const isFirstRenderRef = useRef(false);
     const [play] = useSound(deleteSound, { volume: 0.1, playbackRate: 1.5, interrupt: true });
-    const loadingPromise = useRef<{ resolve: (msg: string) => void; reject: (msg: string) => void }>({
-        resolve: (msg) => {},
-        reject: (msg) => {},
-    });
+    const loadingPromise = useRef<{ resolve: (msg: string) => void; reject: (msg: string) => void } | undefined>(undefined);
     const message = useRef<string>('');
     const [ initState, setInitState ] = useState<INIT_STATE>(INIT_STATE.LOADING);
     const [todos, setTodos] = useState<TodoItemType[]>([]);
@@ -53,8 +49,9 @@ function TodoList() {
 
         const handleLocalStorageChange = (e: StorageEvent) => {
             if (e.key === STORAGE_KEYS.TODOS && e.newValue) {
-                loadingPromise.current.resolve('保存成功');
+                loadingPromise.current?.resolve('保存成功');
                 handleSetTodos(JSON.parse(e.newValue));
+
             }
             if (e.key === STORAGE_KEYS.CONFLICTS) {
                 const conflicts = JSON.parse(e.newValue || '[]');
@@ -67,7 +64,7 @@ function TodoList() {
 
         const handleStorageChange = (e: any) => {
             if (e[STORAGE_KEYS.TODOS]) {
-                loadingPromise.current.resolve('保存成功');
+                loadingPromise.current?.resolve('保存成功');
                 handleSetTodos(JSON.parse(e[STORAGE_KEYS.TODOS]));
             }
 
@@ -93,16 +90,21 @@ function TodoList() {
    
 
     const loading = () => {
+        if(loadingPromise.current) return;
         toast.promise(
             new Promise((resolve, reject) => {
                 message.current = '';
-                loadingPromise.current.resolve = (msg) => {
-                    message.current = msg;
-                    resolve(msg);
-                };
-                loadingPromise.current.reject = (msg) => {
-                    message.current = msg;
-                    reject(msg);
+                loadingPromise.current = {
+                    resolve: (msg) => {
+                        message.current = msg;
+                        loadingPromise.current = undefined;
+                        resolve(msg);
+                    },
+                    reject: (msg) => {
+                        message.current = msg;
+                        loadingPromise.current = undefined;
+                        reject(msg);
+                    },
                 };
             }),
             {
@@ -166,7 +168,7 @@ function TodoList() {
             {addTodoInputVisible && <TodoInput todo={{id: String(Math.random()), content: '', isDone: false}} cancelInput={() => {
                 setAddTodoInputVisible(false);
             }} saveTodo={onAddTodo}/>}
-            <Toaster />
+            <Toaster position="bottom-right" />
 
         </div>
     );
